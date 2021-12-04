@@ -16,22 +16,46 @@
 
 #include <QApplication>
 #include <QMutex>
+#include <string>
+#include <iostream>
+
+#include <zmqpp/zmqpp.hpp>
 
 #include "constants.h"
 #include "packetSSL.h"
 
-const QString ReceiverWorker::visionIP = QStringLiteral("224.5.23.2");
+const QString ReceiverWorker::visionIP = QStringLiteral("224.0.0.1");
 const QString ReceiverWorker::defaultInterface = QStringLiteral("eth1");
 
 ReceiverWorker::ReceiverWorker()
     : mSocket(this)
-	, mStatisticsTimer(this)
-	, mGroupAddress(visionIP)
+    , socket(context, zmqpp::socket_type::publish)
+    , mStatisticsTimer(this)
+    , mGroupAddress(visionIP)
 {
 	mStatisticsTimer.setInterval(1000);
 
 	connect(&mStatisticsTimer, SIGNAL(timeout()), this, SLOT(formStatistics()));
 	connect(&mSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
+
+    std::cout << "I'm here" << std::endl;
+    // TODO: Create ZeroMQ connection
+    const std::string endpoint = "tcp://*:4242";
+
+    // initialize the 0MQ context
+    zmqpp::context context;
+
+    // generate a push socket
+//    zmqpp::socket_type type = zmqpp::socket_type::push;
+//    zmqpp::socket socket (context, type);
+//    std::cout << "Initializing" << std::endl;
+//    socket = zmqpp::socket(context, type);
+//    std::cout << "Initialized" << std::endl;
+
+    // open the connection
+    std::cout << "Opening connection to " << endpoint << "..." << std::endl;
+    socket.bind(endpoint);
+    std::cout << "Connected" << std::endl;
 }
 
 ReceiverWorker::~ReceiverWorker()
@@ -95,7 +119,25 @@ void ReceiverWorker::processPendingDatagrams()
 		QByteArray datagram;
 		datagram.resize(datagramSize);
 		mSocket.readDatagram(datagram.data(), datagram.size());
-		QSharedPointer<SSL_WrapperPacket> packet(new SSL_WrapperPacket());
+
+        // TODO: Send to ZeroMQ here
+        // send a message
+        std::cout << "Sending text and a number..." << std::endl;
+        zmqpp::message message;
+        // compose a message from a string and a number
+//        message << "Hello World!" << 42;
+//        zmqpp::message message(datagramSize);
+//        std::memcpy(message, datagram.data(), datagramSize);
+
+        message.add_raw(datagram.data(), datagramSize);
+//        message << datagram.data();
+        socket.send(message);
+
+        std::cout << "Sent message. " << datagramSize << " " << datagram.size() << " " << sizeof(datagram.data())/sizeof(datagram.data()[0]) << std::endl;
+        std::cout << "Finished." << std::endl;
+
+
+        QSharedPointer<SSL_WrapperPacket> packet(new SSL_WrapperPacket());
 		auto parseResult = packet->ParseFromArray(datagram.data(), datagramSize);
 		if (!parseResult) {
             qInfo() << "ERROR: Failed to parse packet from datagram; skipping";

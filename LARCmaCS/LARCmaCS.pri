@@ -25,7 +25,9 @@ unix {
           -L$${MATLAB_DIR}/../bin/glnxa64 -lmat \
           -L$${MATLAB_DIR}/../bin/glnxa64 -lmx \
           -L$${MATLAB_DIR}/../bin/glnxa64 -lmwresource_core \
-          -L$${MATLAB_DIR}/../bin/glnxa64 -licudata
+          -L$${MATLAB_DIR}/../bin/glnxa64 -licudata \
+          -L/usr/local/lib -lzmqpp \
+          -lzmq
 }
 
 QT += core gui network

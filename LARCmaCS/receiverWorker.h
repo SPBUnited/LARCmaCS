@@ -17,6 +17,7 @@
 #include <QTimer>
 #include <QUdpSocket>
 #include <QNetworkInterface>
+#include <zmqpp/zmqpp.hpp>
 
 #include "messages_robocup_ssl_wrapper.pb.h"
 
@@ -49,7 +50,9 @@ private:
 
 	static const QString visionIP;
     static const QString defaultInterface;
-	QUdpSocket mSocket;
+    QUdpSocket mSocket;
+    zmqpp::context context;
+    zmqpp::socket socket;
     QUdpSocket mSocketFeedback;
 	QTimer mStatisticsTimer;
 	QHostAddress mGroupAddress;
