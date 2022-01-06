@@ -24,7 +24,7 @@
 #include "constants.h"
 #include "packetSSL.h"
 
-const QString ReceiverWorker::visionIP = QStringLiteral("224.0.0.1");
+const QString ReceiverWorker::visionIP = QStringLiteral("224.5.23.2");
 const QString ReceiverWorker::defaultInterface = QStringLiteral("eth1");
 
 ReceiverWorker::ReceiverWorker()
@@ -122,19 +122,22 @@ void ReceiverWorker::processPendingDatagrams()
 
         // TODO: Send to ZeroMQ here
         // send a message
-        std::cout << "Sending text and a number..." << std::endl;
+//        std::cout << "Sending text and a number..." << std::endl;
         zmqpp::message message;
         // compose a message from a string and a number
 //        message << "Hello World!" << 42;
 //        zmqpp::message message(datagramSize);
 //        std::memcpy(message, datagram.data(), datagramSize);
-
+//        double * ruleArray =
+//                                (double *)malloc(32 * 13  * sizeof(double));
+//        message.raw_data(0);
+//        message.size(0);
         message.add_raw(datagram.data(), datagramSize);
 //        message << datagram.data();
         socket.send(message);
 
-        std::cout << "Sent message. " << datagramSize << " " << datagram.size() << " " << sizeof(datagram.data())/sizeof(datagram.data()[0]) << std::endl;
-        std::cout << "Finished." << std::endl;
+//        std::cout << "Sent message. " << datagramSize << " " << datagram.size() << " " << sizeof(datagram.data())/sizeof(datagram.data()[0]) << std::endl;
+//        std::cout << "Finished." << std::endl;
 
 
         QSharedPointer<SSL_WrapperPacket> packet(new SSL_WrapperPacket());

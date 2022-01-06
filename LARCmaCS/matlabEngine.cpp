@@ -15,14 +15,19 @@
 #include "matlabEngine.h"
 #include <QDebug>
 #include <QApplication>
+#include <zmqpp/zmqpp.hpp>
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 MatlabEngine::MatlabEngine(SharedRes * sharedRes)
-	: EngineInterface(sharedRes)
+    : EngineInterface(sharedRes)
 {
 	RCConfig rcconfig;
 	MlData mtl(rcconfig);
 	mMatlabData = mtl;
-	runMatlab();
+    runMatlab();
 }
 
 MatlabEngine::~MatlabEngine()
@@ -97,6 +102,9 @@ QSharedPointer<PacketSSL> MatlabEngine::loadVisionData()
 			idCam = mDetection.camera_id() + 1;
 			balls_n = mDetection.balls_size();
 
+            qDebug() << "Number of balls: " << balls_n;
+            qDebug() << "Camera: " << idCam;
+
 			// [Start] Ball info
             //qDebug() << balls_n << ' ';
             for (int j = 0; j < Constants::ballAlgoPacketSize; ++j)
@@ -108,6 +116,12 @@ QSharedPointer<PacketSSL> MatlabEngine::loadVisionData()
             for (int ball_id = 0; ball_id < balls_n; ++ball_id)
             {
                 SSL_DetectionBall ball = mDetection.balls(ball_id);
+                qDebug() << "Ball: " << ball.x() << " " << ball.y();
+//                0 256 512
+//                64 320 576
+//                128 384 640
+//                192 448 704
+                qDebug() << ball_id+(idCam - 1) * Constants::maxBallsInCamera << " " << ball_id+Constants::maxBallsInField+(idCam - 1) * Constants::maxBallsInCamera << " " << ball_id+2*Constants::maxBallsInField+(idCam - 1) * Constants::maxBallsInCamera;
                 packetSSL->balls[ball_id+(idCam - 1) * Constants::maxBallsInCamera] = idCam;
                 packetSSL->balls[ball_id+Constants::maxBallsInField+(idCam - 1) * Constants::maxBallsInCamera] = ball.x();
                 packetSSL->balls[ball_id+2*Constants::maxBallsInField+(idCam - 1) * Constants::maxBallsInCamera] = ball.y();
@@ -174,18 +188,18 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 	}
 
     memcpy(mxGetPr(mMatlabData.Ball), packetssl->balls, Constants::maxBallsInField * Constants::ballAlgoPacketSize * sizeof(double));
-	memcpy(mxGetPr(mMatlabData.Blue), packetssl->robots_blue, Constants::robotAlgoPacketSize * sizeof(double));
-	memcpy(mxGetPr(mMatlabData.Yellow), packetssl->robots_yellow, Constants::robotAlgoPacketSize * sizeof(double));
-	memcpy(mxGetPr(mMatlabData.fieldInfo), packetssl->fieldInfo, Constants::fieldInfoSize * sizeof(double));
+    memcpy(mxGetPr(mMatlabData.Blue), packetssl->robots_blue, Constants::robotAlgoPacketSize * sizeof(double));
+    memcpy(mxGetPr(mMatlabData.Yellow), packetssl->robots_yellow, Constants::robotAlgoPacketSize * sizeof(double));
+    memcpy(mxGetPr(mMatlabData.fieldInfo), packetssl->fieldInfo, Constants::fieldInfoSize * sizeof(double));
 
-	double state = mSharedRes->getRefereeState();
-	memcpy(mxGetPr(mMatlabData.state), &state, sizeof(double));
+    double state = mSharedRes->getRefereeState();
+    memcpy(mxGetPr(mMatlabData.state), &state, sizeof(double));
 
-	double team = mSharedRes->getRefereeTeam();
-	memcpy(mxGetPr(mMatlabData.team), &team, sizeof(double));
+    double team = mSharedRes->getRefereeTeam();
+    memcpy(mxGetPr(mMatlabData.team), &team, sizeof(double));
 
-	double partOfField = (double)mSharedRes->getRefereePartOfFieldLeft();
-	memcpy(mxGetPr(mMatlabData.partOfFieldLeft), &partOfField, sizeof(double));
+    double partOfField = (double)mSharedRes->getRefereePartOfFieldLeft();
+    memcpy(mxGetPr(mMatlabData.partOfFieldLeft), &partOfField, sizeof(double));
 
 //    qDebug() << packetssl->balls[0] << ' '
 //             << packetssl->balls[  Constants::maxBallsInField] << ' '
@@ -194,53 +208,98 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 //             << packetssl->balls[1+Constants::maxBallsInField] << ' '
 //             << packetssl->balls[1+2*Constants::maxBallsInField] << ' ';
 
-	engPutVariable(mMatlabData.ep, "Balls", mMatlabData.Ball);
-	engPutVariable(mMatlabData.ep, "Blues", mMatlabData.Blue);
-	engPutVariable(mMatlabData.ep, "Yellows", mMatlabData.Yellow);
-	engPutVariable(mMatlabData.ep, "FieldInfo", mMatlabData.fieldInfo);
-	engPutVariable(mMatlabData.ep, "RefState", mMatlabData.state);
-	engPutVariable(mMatlabData.ep, "RefCommandForTeam", mMatlabData.team);
-	engPutVariable(mMatlabData.ep, "RefPartOfFieldLeft", mMatlabData.partOfFieldLeft);
-	evalString(mMatlabData.config.file_of_matlab);
+
+    engPutVariable(mMatlabData.ep, "Balls", mMatlabData.Ball);
+    engPutVariable(mMatlabData.ep, "Blues", mMatlabData.Blue);
+    engPutVariable(mMatlabData.ep, "Yellows", mMatlabData.Yellow);
+    engPutVariable(mMatlabData.ep, "FieldInfo", mMatlabData.fieldInfo);
+    engPutVariable(mMatlabData.ep, "RefState", mMatlabData.state);
+    engPutVariable(mMatlabData.ep, "RefCommandForTeam", mMatlabData.team);
+    engPutVariable(mMatlabData.ep, "RefPartOfFieldLeft", mMatlabData.partOfFieldLeft);
+    evalString(mMatlabData.config.file_of_matlab);
 
 // Забираем Rules и очищаем его в воркспейсе
 
-	mMatlabData.Rule = engGetVariable(mMatlabData.ep, "Rules");
-    double * ruleArray =
-			(double *)malloc(Constants::ruleAmount * Constants::ruleLength * sizeof(double));
-	if (mMatlabData.Rule != 0) {
-		memcpy(ruleArray, mxGetPr(mMatlabData.Rule), Constants::ruleAmount * Constants::ruleLength * sizeof(double));
-	} else {
-		memset(ruleArray, 0, Constants::ruleAmount * Constants::ruleLength * sizeof(double));
-	}
-	char sendString[256];
-	sprintf(sendString, "Rules=zeros(%d, %d);", Constants::ruleAmount, Constants::ruleLength);
-	evalString(sendString);
+    mMatlabData.Rule = engGetVariable(mMatlabData.ep, "Rules");
+    const string endpoint = "tcp://localhost:5667";
+    zmqpp::context context;
+    zmqpp::socket_type type = zmqpp::socket_type::subscribe;
+    zmqpp::socket socket (context, type);
+    socket.subscribe("");
+    socket.connect(endpoint);
+    zmqpp::message message;
+
+    socket.receive(message);
+
+        double * ruleArray =
+                            (double *)malloc(32 * 13  * sizeof(double));
+       memcpy(ruleArray, message.raw_data(), 32 * 13 * sizeof(double));
+       //message.get(ruleArray, 32 * 13);
+
+//    double * ruleArray =
+//            (double *)malloc(Constants::ruleAmount * Constants::ruleLength * sizeof(double));
+//    if (mMatlabData.Rule != 0) {
+//        memcpy(ruleArray, mxGetPr(mMatlabData.Rule), Constants::ruleAmount * Constants::ruleLength * sizeof(double));
+//    } else {
+//        memset(ruleArray, 0, Constants::ruleAmount * Constants::ruleLength * sizeof(double));
+//    }
+
+    cout << "Received text:" << ruleArray << endl;
+
+     for (int i = 0; i < 32; ++i)
+     {
+         for (int j = 0; j < 13; ++j)
+         {
+             std::cout << ruleArray[i * 13 + j] << ' ';
+         }
+         std::cout << std::endl;
+     }
+
+     qDebug() << "Rules" << ruleArray << endl;
+
+    char sendString[256];
+    sprintf(sendString, "Rules=zeros(%d, %d);", Constants::ruleAmount, Constants::ruleLength);
+    evalString(sendString);
 
 // Разбор пришедшего пакета и переправка его строк на connector
 
 	QVector<Rule> rule(Constants::ruleAmount);
 
-	for (int i = 0; i < Constants::ruleAmount; i++) {
-		if (ruleArray[i] == 1) {
-			rule[i].mSpeedX = ruleArray[2 * Constants::ruleAmount + i];
-			rule[i].mSpeedY = ruleArray[3 * Constants::ruleAmount + i];
-			rule[i].mSpeedR = ruleArray[5 * Constants::ruleAmount + i];
-			rule[i].mKickUp = ruleArray[6 * Constants::ruleAmount + i];
-			rule[i].mKickForward = ruleArray[4 * Constants::ruleAmount + i];
-			rule[i].mAutoKick = ruleArray[7 * Constants::ruleAmount + i];
-			rule[i].mKickerVoltageLevel = ruleArray[8 * Constants::ruleAmount + i];
-			rule[i].mDribblerEnable = ruleArray[9 * Constants::ruleAmount + i];
-			rule[i].mSpeedDribbler = ruleArray[10 * Constants::ruleAmount + i];
-			rule[i].mKickerChargeEnable = ruleArray[11 * Constants::ruleAmount + i];
-			rule[i].mBeep = ruleArray[12 * Constants::ruleAmount + i];
+    for (int i = 0; i < Constants::ruleAmount; i++) {
+        if (ruleArray[i * Constants::ruleLength] == 1) {
+            rule[i].mSpeedX = ruleArray[i * Constants::ruleLength + 1];
+            rule[i].mSpeedY = ruleArray[i * Constants::ruleLength + 2];
+            rule[i].mSpeedR = ruleArray[i * Constants::ruleLength + 3];
+            rule[i].mKickUp = ruleArray[i * Constants::ruleLength + 4];
+            rule[i].mKickForward = ruleArray[i * Constants::ruleLength + 5];
+            rule[i].mAutoKick = ruleArray[i * Constants::ruleLength + 6];
+            rule[i].mKickerVoltageLevel = ruleArray[i * Constants::ruleLength + 7];
+            rule[i].mDribblerEnable = ruleArray[i * Constants::ruleLength + 8];
+            rule[i].mSpeedDribbler = ruleArray[i * Constants::ruleLength + 9];
+            rule[i].mKickerChargeEnable = ruleArray[i * Constants::ruleLength + 10];
+            rule[i].mBeep = ruleArray[i * Constants::ruleLength + 11];
+        }
+    }
 
-		}
-	}
+//	for (int i = 0; i < Constants::ruleAmount; i++) {
+//		if (ruleArray[i] == 1) {
+//			rule[i].mSpeedX = ruleArray[2 * Constants::ruleAmount + i];
+//			rule[i].mSpeedY = ruleArray[3 * Constants::ruleAmount + i];
+//			rule[i].mSpeedR = ruleArray[5 * Constants::ruleAmount + i];
+//			rule[i].mKickUp = ruleArray[6 * Constants::ruleAmount + i];
+//			rule[i].mKickForward = ruleArray[4 * Constants::ruleAmount + i];
+//			rule[i].mAutoKick = ruleArray[7 * Constants::ruleAmount + i];
+//			rule[i].mKickerVoltageLevel = ruleArray[8 * Constants::ruleAmount + i];
+//			rule[i].mDribblerEnable = ruleArray[9 * Constants::ruleAmount + i];
+//			rule[i].mSpeedDribbler = ruleArray[10 * Constants::ruleAmount + i];
+//			rule[i].mKickerChargeEnable = ruleArray[11 * Constants::ruleAmount + i];
+//			rule[i].mBeep = ruleArray[12 * Constants::ruleAmount + i];
+//		}
+//	}
 	emit newData(rule);
 
-	free(ruleArray);
-	mxDestroyArray(mMatlabData.Rule);
+    free(ruleArray);
+    mxDestroyArray(mMatlabData.Rule);
 
 	updatePauseState();
 }

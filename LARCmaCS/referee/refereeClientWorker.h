@@ -2,6 +2,7 @@
 
 #include <QUdpSocket>
 #include <QNetworkInterface>
+#include <zmqpp/zmqpp.hpp>
 
 #include "constants.h"
 #include "gameState.h"
@@ -35,6 +36,9 @@ private:
 	static const QString hostName;
     static const QString defaultInterface;
 	QUdpSocket mSocket;
-	QHostAddress mGroupAddress;
+    zmqpp::context context;
+    zmqpp::socket socket;
+    QHostAddress mGroupAddress;
 	QSharedPointer<RefereeInfo> mRefInfo;
+
 };

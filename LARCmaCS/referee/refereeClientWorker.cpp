@@ -1,14 +1,28 @@
 #include "refereeClientWorker.h"
 
+#include <zmqpp/zmqpp.hpp>
+
+using namespace std;
+
 const QString RefereeClientWorker::hostName = QStringLiteral("224.5.23.1");
 const QString RefereeClientWorker::defaultInterface = QStringLiteral("eth1");
 
 
 RefereeClientWorker::RefereeClientWorker()
 	: mSocket(this)
+    , socket(context, zmqpp::socket_type::publish)
 	, mGroupAddress(hostName)
 {
 	connect(&mSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()));
+
+
+    const std::string endpoint = "tcp://*:4243";
+
+    zmqpp::context context;
+
+    std::cout << "Opening connection to " << endpoint << "..." << std::endl;
+    socket.bind(endpoint);
+    std::cout << "Connected" << std::endl;
 }
 
 RefereeClientWorker::~RefereeClientWorker()
@@ -70,6 +84,37 @@ void RefereeClientWorker::processPendingDatagrams()
 		}
 
 		gState.updateRefereeInfoFromState(tempRefInfo);
+
+
+        // TODO: Send to ZeroMQ here
+        // send a message
+//        std::cout << "Sending text and a number..." << std::endl;
+        zmqpp::message send_message;
+//        send_message << tempRefInfo.state << tempRefInfo.commandForTeam << tempRefInfo.isPartOfFieldLeft;
+
+        std::string json_ref = "{"
+                               "\"state\":" + std::to_string(tempRefInfo.state) + "," +
+                               "\"team\":"  + std::to_string(tempRefInfo.commandForTeam) + "," +
+                               "\"is_left\":" + std::to_string(tempRefInfo.isPartOfFieldLeft) +
+                               "}";
+
+        send_message  << json_ref;
+
+        // compose a message from a string and a number
+//        message << "Hello World!" << 42;
+//        zmqpp::message message(datagramSize);
+//        std::memcpy(message, datagram.data(), datagramSize);
+//        double * ruleArray =
+//                                (double *)malloc(32 * 13  * sizeof(double));
+//        message.raw_data(0);
+//        message.size(0);
+//        send_message.add_raw(datagram.data(), datagramSize);
+//        message << datagram.data();
+        socket.send(send_message);
+
+//        std::cout << "Sent message. " << datagramSize << " " << datagram.size() << " " << sizeof(datagram.data())/sizeof(datagram.data()[0]) << std::endl;
+//        std::cout << "Finished." << std::endl;
+
 
 		if (mRefInfo != nullptr) {
 			if (tempRefInfo.state != mRefInfo->state
