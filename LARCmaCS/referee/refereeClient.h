@@ -24,6 +24,5 @@ signals:
 private:
 	RefereeClientWorker * mWorker;
 	QThread mThread;
-	SharedRes * mSharedRes;
-    zmqpp::context context;
+    SharedRes * mSharedRes;
 };
