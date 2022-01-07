@@ -234,7 +234,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
         double * ruleArray =
                             (double *)malloc(32 * 13  * sizeof(double));
        memcpy(ruleArray, message.raw_data(), 32 * 13 * sizeof(double));
-       //message.get(ruleArray, 32 * 13);
+//       message.get(ruleArray, 32 * 13);
 
 //    double * ruleArray =
 //            (double *)malloc(Constants::ruleAmount * Constants::ruleLength * sizeof(double));
@@ -281,21 +281,21 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
         }
     }
 
-//	for (int i = 0; i < Constants::ruleAmount; i++) {
-//		if (ruleArray[i] == 1) {
-//			rule[i].mSpeedX = ruleArray[2 * Constants::ruleAmount + i];
-//			rule[i].mSpeedY = ruleArray[3 * Constants::ruleAmount + i];
-//			rule[i].mSpeedR = ruleArray[5 * Constants::ruleAmount + i];
-//			rule[i].mKickUp = ruleArray[6 * Constants::ruleAmount + i];
-//			rule[i].mKickForward = ruleArray[4 * Constants::ruleAmount + i];
-//			rule[i].mAutoKick = ruleArray[7 * Constants::ruleAmount + i];
-//			rule[i].mKickerVoltageLevel = ruleArray[8 * Constants::ruleAmount + i];
-//			rule[i].mDribblerEnable = ruleArray[9 * Constants::ruleAmount + i];
-//			rule[i].mSpeedDribbler = ruleArray[10 * Constants::ruleAmount + i];
-//			rule[i].mKickerChargeEnable = ruleArray[11 * Constants::ruleAmount + i];
-//			rule[i].mBeep = ruleArray[12 * Constants::ruleAmount + i];
-//		}
-//	}
+//    for (int i = 0; i < Constants::ruleAmount; i++) {
+//        if (ruleArray[i] == 1) {
+//            rule[i].mSpeedX = ruleArray[2 * Constants::ruleAmount + i];
+//            rule[i].mSpeedY = ruleArray[3 * Constants::ruleAmount + i];
+//            rule[i].mSpeedR = ruleArray[5 * Constants::ruleAmount + i];
+//            rule[i].mKickUp = ruleArray[6 * Constants::ruleAmount + i];
+//            rule[i].mKickForward = ruleArray[4 * Constants::ruleAmount + i];
+//            rule[i].mAutoKick = ruleArray[7 * Constants::ruleAmount + i];
+//            rule[i].mKickerVoltageLevel = ruleArray[8 * Constants::ruleAmount + i];
+//            rule[i].mDribblerEnable = ruleArray[9 * Constants::ruleAmount + i];
+//            rule[i].mSpeedDribbler = ruleArray[10 * Constants::ruleAmount + i];
+//            rule[i].mKickerChargeEnable = ruleArray[11 * Constants::ruleAmount + i];
+//            rule[i].mBeep = ruleArray[12 * Constants::ruleAmount + i];
+//        }
+//    }
 	emit newData(rule);
 
     free(ruleArray);
