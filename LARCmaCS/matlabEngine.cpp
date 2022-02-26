@@ -187,19 +187,22 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 		}
 	}
 
-    memcpy(mxGetPr(mMatlabData.Ball), packetssl->balls, Constants::maxBallsInField * Constants::ballAlgoPacketSize * sizeof(double));
-    memcpy(mxGetPr(mMatlabData.Blue), packetssl->robots_blue, Constants::robotAlgoPacketSize * sizeof(double));
-    memcpy(mxGetPr(mMatlabData.Yellow), packetssl->robots_yellow, Constants::robotAlgoPacketSize * sizeof(double));
-    memcpy(mxGetPr(mMatlabData.fieldInfo), packetssl->fieldInfo, Constants::fieldInfoSize * sizeof(double));
+//    memcpy(mxGetPr(mMatlabData.Ball), packetssl->balls, Constants::maxBallsInField * Constants::ballAlgoPacketSize * sizeof(double));
+//    memcpy(mxGetPr(mMatlabData.Blue), packetssl->robots_blue, Constants::robotAlgoPacketSize * sizeof(double));
+//    memcpy(mxGetPr(mMatlabData.Yellow), packetssl->robots_yellow, Constants::robotAlgoPacketSize * sizeof(double));
+//    memcpy(mxGetPr(mMatlabData.fieldInfo), packetssl->fieldInfo, Constants::fieldInfoSize * sizeof(double));
 
-    double state = mSharedRes->getRefereeState();
-    memcpy(mxGetPr(mMatlabData.state), &state, sizeof(double));
+//    double state = mSharedRes->getRefereeState();
+//    qDebug() << "REFEREE STATE " << state << endl;
+//    memcpy(mxGetPr(mMatlabData.state), &state, sizeof(double));
 
-    double team = mSharedRes->getRefereeTeam();
-    memcpy(mxGetPr(mMatlabData.team), &team, sizeof(double));
+//    double team = mSharedRes->getRefereeTeam();
+//    qDebug() << "REFEREE TEAM " << team << endl;
+//    memcpy(mxGetPr(mMatlabData.team), &team, sizeof(double));
 
-    double partOfField = (double)mSharedRes->getRefereePartOfFieldLeft();
-    memcpy(mxGetPr(mMatlabData.partOfFieldLeft), &partOfField, sizeof(double));
+//    double partOfField = (double)mSharedRes->getRefereePartOfFieldLeft();
+//    qDebug() << "REFEREE part of field " << partOfField << endl;
+//    memcpy(mxGetPr(mMatlabData.partOfFieldLeft), &partOfField, sizeof(double));
 
 //    qDebug() << packetssl->balls[0] << ' '
 //             << packetssl->balls[  Constants::maxBallsInField] << ' '
@@ -209,18 +212,19 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 //             << packetssl->balls[1+2*Constants::maxBallsInField] << ' ';
 
 
-    engPutVariable(mMatlabData.ep, "Balls", mMatlabData.Ball);
-    engPutVariable(mMatlabData.ep, "Blues", mMatlabData.Blue);
-    engPutVariable(mMatlabData.ep, "Yellows", mMatlabData.Yellow);
-    engPutVariable(mMatlabData.ep, "FieldInfo", mMatlabData.fieldInfo);
-    engPutVariable(mMatlabData.ep, "RefState", mMatlabData.state);
-    engPutVariable(mMatlabData.ep, "RefCommandForTeam", mMatlabData.team);
-    engPutVariable(mMatlabData.ep, "RefPartOfFieldLeft", mMatlabData.partOfFieldLeft);
-    evalString(mMatlabData.config.file_of_matlab);
+//    engPutVariable(mMatlabData.ep, "Balls", mMatlabData.Ball);
+//    engPutVariable(mMatlabData.ep, "Blues", mMatlabData.Blue);
+//    engPutVariable(mMatlabData.ep, "Yellows", mMatlabData.Yellow);
+//    engPutVariable(mMatlabData.ep, "FieldInfo", mMatlabData.fieldInfo);
+//    engPutVariable(mMatlabData.ep, "RefState", mMatlabData.state);
+//    engPutVariable(mMatlabData.ep, "RefCommandForTeam", mMatlabData.team);
+//    engPutVariable(mMatlabData.ep, "RefPartOfFieldLeft", mMatlabData.partOfFieldLeft);
+//    evalString(mMatlabData.config.file_of_matlab);
 
 // Забираем Rules и очищаем его в воркспейсе
 
     mMatlabData.Rule = engGetVariable(mMatlabData.ep, "Rules");
+
     const string endpoint = "tcp://localhost:5667";
     zmqpp::context context;
     zmqpp::socket_type type = zmqpp::socket_type::subscribe;
@@ -296,63 +300,67 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 //            rule[i].mBeep = ruleArray[12 * Constants::ruleAmount + i];
 //        }
 //    }
-	emit newData(rule);
+
+    emit newData(rule);
 
     free(ruleArray);
-    mxDestroyArray(mMatlabData.Rule);
+//    mxDestroyArray(mMatlabData.Rule);
 
-	updatePauseState();
+//	updatePauseState();
 }
 
 void MatlabEngine::updatePauseState()
 {
-	evalString("ispause=RP.Pause");
-	mxArray *mxitpause = engGetVariable(mMatlabData.ep, "ispause");
-	bool pauseStatus = true;
-	if (mxitpause != 0) {
-		double* itpause = mxGetPr(mxitpause);
-		if (itpause != 0) {
-			if ((*itpause) == 0) {
-				mxArray* mxzMain_End = engGetVariable(mMatlabData.ep, "zMain_End");
-				if (mxzMain_End != 0) {
-					double* zMain_End = mxGetPr(mxzMain_End);
-					if (zMain_End != 0) {
-						if ((*zMain_End) == 0) {
-							emit algoStatus("main br");
-						} else {
-							pauseStatus = false;
-							emit algoStatus("WORK");
-						}
-					} else {
-						emit algoStatus("-err-z");
-					}
-				} else {
-					emit algoStatus("-err-mz");
-				}
-			} else {
-				emit algoStatus("PAUSE");
-			}
-		} else {
-			emit algoStatus("-err-p"); //Matlab answer corrupted
-		}
-	} else {
-		emit algoStatus("-err-mp"); //Matlab does not respond
-	}
+//	evalString("ispause=RP.Pause");
+//	mxArray *mxitpause = engGetVariable(mMatlabData.ep, "ispause");
+//	bool pauseStatus = true;
+//	if (mxitpause != 0) {
+//		double* itpause = mxGetPr(mxitpause);
+//		if (itpause != 0) {
+//			if ((*itpause) == 0) {
+//				mxArray* mxzMain_End = engGetVariable(mMatlabData.ep, "zMain_End");
+//				if (mxzMain_End != 0) {
+//					double* zMain_End = mxGetPr(mxzMain_End);
+//					if (zMain_End != 0) {
+//						if ((*zMain_End) == 0) {
+//							emit algoStatus("main br");
+//						} else {
+//							pauseStatus = false;
+//							emit algoStatus("WORK");
+//						}
+//					} else {
+//						emit algoStatus("-err-z");
+//					}
+//				} else {
+//					emit algoStatus("-err-mz");
+//				}
+//			} else {
+//				emit algoStatus("PAUSE");
+//			}
+//		} else {
+//			emit algoStatus("-err-p"); //Matlab answer corrupted
+//		}
+//	} else {
+//		emit algoStatus("-err-mp"); //Matlab does not respond
+//	}
 
-	if (mIsPause != pauseStatus) {
-		emit isPause(pauseStatus);
-		mIsPause = pauseStatus;
-	}
+//	if (mIsPause != pauseStatus) {
+//		emit isPause(pauseStatus);
+//		mIsPause = pauseStatus;
+//	}
 }
 
 void MatlabEngine::pauseUnpause()
 {
-	evalString("PAUSE();");
+    mIsPause = !mIsPause;
+//    qDebug() << "---------- PAUSE" << mIsPause << endl;
+    emit isPause(mIsPause);
+//	evalString("PAUSE();");
 }
 
 void MatlabEngine::setDirectory(const QString & path)
 {
 	QString command = "cd " + path;
 	qDebug() << "New Matlab directory = " << path;
-	evalString(command);
+//	evalString(command);
 }
