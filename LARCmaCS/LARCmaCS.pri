@@ -21,12 +21,12 @@ win32 {
 }
 
 unix {
-  LIBS += -L$${MATLAB_DIR}/../bin/glnxa64 -leng \
-          -L$${MATLAB_DIR}/../bin/glnxa64 -lmat \
-          -L$${MATLAB_DIR}/../bin/glnxa64 -lmx \
-          -L$${MATLAB_DIR}/../bin/glnxa64 -lmwresource_core \
-          -L$${MATLAB_DIR}/../bin/glnxa64 -licudata \
-          -L/usr/local/lib -lzmqpp \
+#  LIBS += -L$${MATLAB_DIR}/../bin/glnxa64 -leng \
+#          -L$${MATLAB_DIR}/../bin/glnxa64 -lmat \
+#          -L$${MATLAB_DIR}/../bin/glnxa64 -lmx \
+#          -L$${MATLAB_DIR}/../bin/glnxa64 -lmwresource_core \
+#          -L$${MATLAB_DIR}/../bin/glnxa64 -licudata \
+LIBS +=   -L/usr/local/lib -lzmqpp \
           -lzmq
 }
 
@@ -41,7 +41,7 @@ TEMPLATE = app
 INCLUDEPATH += \
     $${SHARED_DIR}/util \
     $${SHARED_DIR}/rfprotocol \
-    $${MATLAB_DIR}/include \
+#    $${MATLAB_DIR}/include \
     $$PWD/robots \
     $$PWD/referee \
     $$PWD \
@@ -53,7 +53,6 @@ SOURCES +=  \
 	$$PWD/sceneView.cpp \
 	$$PWD/receiver.cpp \
 	$$PWD/mainAlg.cpp \
-	$$PWD/mlData.cpp \
 	$$PWD/remotecontrol.cpp \
 	$$PWD/message.cpp \
 	$$PWD/reference.cpp \
@@ -86,7 +85,6 @@ HEADERS  += \
 	$$PWD/packetSSL.h \
 	$$PWD/receiver.h \
 	$$PWD/mainAlg.h \
-	$$PWD/mlData.h \
 	$$PWD/remotecontrol.h \
 	$$PWD/message.h \
 	$$PWD/reference.h \

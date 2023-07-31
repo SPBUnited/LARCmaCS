@@ -17,7 +17,7 @@
 #include <QSharedPointer>
 
 #include "engineInterface.h"
-#include "mlData.h"
+//#include "mlData.h"
 #include "packetSSL.h"
 
 class MatlabEngine : public EngineInterface
@@ -37,6 +37,6 @@ private:
 	void updatePauseState();
 
 	char mMatlabOutputBuffer[Constants::matlabOutputBufferSize];
-	MlData mMatlabData;
+//	MlData mMatlabData;
 	bool mIsPause {false};
 };

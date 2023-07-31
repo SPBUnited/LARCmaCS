@@ -24,15 +24,15 @@ using namespace std;
 MatlabEngine::MatlabEngine(SharedRes * sharedRes)
     : EngineInterface(sharedRes)
 {
-	RCConfig rcconfig;
-	MlData mtl(rcconfig);
-	mMatlabData = mtl;
-    runMatlab();
+//	RCConfig rcconfig;
+//	MlData mtl(rcconfig);
+//	mMatlabData = mtl;
+//    runMatlab();
 }
 
 MatlabEngine::~MatlabEngine()
 {
-	engClose(mMatlabData.ep);
+//	engClose(mMatlabData.ep);
 }
 
 void MatlabEngine::evaluate()
@@ -40,33 +40,33 @@ void MatlabEngine::evaluate()
 	processPacket(loadVisionData());
 }
 
-void MatlabEngine::runMatlab()
-{
-	if (!(mMatlabData.ep = engOpen(NULL))) {
-		qDebug() << "Can't open Matlab Engine" << endl;
-		return;
-	}
+//void MatlabEngine::runMatlab()
+//{
+//	if (!(mMatlabData.ep = engOpen(NULL))) {
+//		qDebug() << "Can't open Matlab Engine" << endl;
+//		return;
+//	}
 
-    mMatlabOutputBuffer[Constants::matlabOutputBufferSize - 1] = '\0';
-	engOutputBuffer(mMatlabData.ep, mMatlabOutputBuffer, Constants::matlabOutputBufferSize - 1);
-	qDebug() << "Matlab Engine is opened\n" << endl;
+//    mMatlabOutputBuffer[Constants::matlabOutputBufferSize - 1] = '\0';
+//	engOutputBuffer(mMatlabData.ep, mMatlabOutputBuffer, Constants::matlabOutputBufferSize - 1);
+//	qDebug() << "Matlab Engine is opened\n" << endl;
 
-	//-----create Rules-----
-	char sendString[256];
-	sprintf (sendString, "Rules=zeros(%d, %d)", Constants::ruleAmount, Constants::ruleLength);
-	evalString(sendString);
+//	//-----create Rules-----
+//	char sendString[256];
+//	sprintf (sendString, "Rules=zeros(%d, %d)", Constants::ruleAmount, Constants::ruleLength);
+//	evalString(sendString);
 
-	QString dirPath = "cd " + QCoreApplication::applicationDirPath() + "/MLscripts";
-	evalString(dirPath);
-}
+//	QString dirPath = "cd " + QCoreApplication::applicationDirPath() + "/MLscripts";
+//	evalString(dirPath);
+//}
 
 void MatlabEngine::evalString(const QString & str)
 {
-	engEvalString(mMatlabData.ep, str.toUtf8().data());
-	QString tmp = QString(mMatlabOutputBuffer);
-	if (!tmp.contains("\nispause =") && tmp != "") {
-		emit consoleMessage(tmp);
-	}
+//	engEvalString(mMatlabData.ep, str.toUtf8().data());
+//	QString tmp = QString(mMatlabOutputBuffer);
+//	if (!tmp.contains("\nispause =") && tmp != "") {
+//		emit consoleMessage(tmp);
+//	}
 }
 
 QSharedPointer<PacketSSL> MatlabEngine::loadVisionData()
@@ -223,7 +223,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 
 // Забираем Rules и очищаем его в воркспейсе
 
-    mMatlabData.Rule = engGetVariable(mMatlabData.ep, "Rules");
+//    mMatlabData.Rule = engGetVariable(mMatlabData.ep, "Rules");
 
     const string endpoint = "tcp://localhost:5667";
     zmqpp::context context;
@@ -355,12 +355,13 @@ void MatlabEngine::pauseUnpause()
     mIsPause = !mIsPause;
 //    qDebug() << "---------- PAUSE" << mIsPause << endl;
     emit isPause(mIsPause);
-//	evalString("PAUSE();");
+//     evalString("PAUSE();");
 }
 
 void MatlabEngine::setDirectory(const QString & path)
 {
-	QString command = "cd " + path;
-	qDebug() << "New Matlab directory = " << path;
-//	evalString(command);
+       QString command = "cd " + path;
+       qDebug() << "New Matlab directory = " << path;
+//     evalString(command);
 }
+
