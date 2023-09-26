@@ -113,31 +113,13 @@ void Connector::sendNewCommand(const QVector<Rule> & rule)
                     ErForceRobot::formControlPacket(command, k, 0, 0, 0, 0, 0, 0, 0);
 				}
 			}
-            if (rule[k].mSpeedX != 0 ||
-                rule[k].mSpeedY != 0 ||
-                rule[k].mSpeedR != 0 ||
-                rule[k].mKickUp != 0 ||
-                rule[k].mKickForward != 0 ||
-                rule[k].mDribblerEnable != 0 ||
-                rule[k].mAutoKick != 0 ||
-                rule[k].mSpeedX != oldRule[k].mSpeedX ||
-                rule[k].mSpeedY != oldRule[k].mSpeedY ||
-                rule[k].mSpeedR != oldRule[k].mSpeedR ||
-                rule[k].mKickUp != oldRule[k].mKickUp ||
-                rule[k].mKickForward != oldRule[k].mKickForward ||
-                rule[k].mKickerVoltageLevel != oldRule[k].mKickerVoltageLevel ||
-                rule[k].mDribblerEnable != oldRule[k].mDribblerEnable ||
-                rule[k].mSpeedDribbler != oldRule[k].mSpeedDribbler ||
-                rule[k].mAutoKick != oldRule[k].mAutoKick ||
-                rule[k].mKickerChargeEnable != oldRule[k].mKickerChargeEnable ||
-                rule[k].mBeep != oldRule[k].mBeep) {
-                if (!simFlag) {
-                    emit run(k, command);
-                } else {
-                    emit runSim(command, k >= rule.size()/2);
-                }
-                oldRule[k] = rule[k];
+
+            if (!simFlag) {
+                emit run(k, command);
+            } else {
+                emit runSim(command, k >= rule.size()/2);
             }
+            oldRule[k] = rule[k];
 		}
 
 	}
