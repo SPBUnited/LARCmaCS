@@ -1,0 +1,66 @@
+FROM mathworks/matlab:r2021b
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y qt5-default && \
+    apt-get install -y g++ && \
+    apt-get install -y protobuf-compiler && \
+    apt-get install -y make && \
+    apt-get install -y libtool && \
+    apt-get install -y pkg-config && \
+    apt-get install -y automake && \
+    apt-get install -y autoconf && \
+    apt-get install -y iputils-ping && \
+    apt-get install -y telnet && \
+    apt-get install -y nano && \
+    apt-get install -y csh && \
+    apt-get install -y python3.9 && \
+    apt-get install -y python3-pip
+
+
+RUN git clone git://github.com/zeromq/libzmq.git && \
+    cd libzmq && \
+    ./autogen.sh && \ 
+    ./configure && make && \
+    make install && \
+    ldconfig && \
+    cd ..
+
+RUN git clone git://github.com/zeromq/zmqpp.git && \
+    cd zmqpp && \
+    make && \
+    make install && \
+    ldconfig
+
+
+ADD R2021b /usr/local/MATLAB/R2021b
+
+
+RUN chmod 777 /usr/local/MATLAB/R2021b && \
+    mkdir -p /usr/local/MATLAB/R2021b/licenses && chmod 777 /usr/local/MATLAB/R2021b/licenses
+
+RUN ln -sf /usr/local/MATLAB/R2021b/bin/glnxa64/libicudata.so.67 /usr/local/MATLAB/R2021b/bin/glnxa64/libicudata.so && \
+    mkdir -p /usr/local/MATLAB/R2021b/bin/glnxa64/qt && \
+    rm -f /usr/local/MATLAB/R2021b/bin/glnxa64/libQt5* 
+
+RUN cd /usr/local/MATLAB/R2021b/extern/engines/python && \
+    python3.9 setup.py install
+
+
+ADD LARCmaCS /LARCmaCS
+
+RUN cd LARCmaCS && \
+    mkdir build && cd build && \
+    qmake ../LARCmaCS.pro -spec linux-g++ && \
+    make
+
+
+ADD strategy-bridge /strategy-bridge
+
+RUN cd strategy-bridge && \
+    python3.9 -m pip install -r requirements.txt && \
+    mkdir /strategy-bridge/tmp && chmod -R 777 /strategy-bridge 
+
+
+USER matlab

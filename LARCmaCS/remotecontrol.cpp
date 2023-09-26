@@ -59,8 +59,10 @@ void RemoteControl::keyPressEvent(QKeyEvent * key)
 void RemoteControl::keyReleaseEvent(QKeyEvent * key)
 {
 	quint32 nkey = key->nativeVirtualKey();
-	if (nkey < 256)
-		keys[nkey] = 0;
+    if (nkey < 256) {
+        keys[nkey] = 0;
+        qDebug() << nkey << " key release\n";
+    }
 	if (nkey == QT_KEY_SHIFT_NATIVE) {
 		key_shift = 0;
 	}
@@ -93,22 +95,22 @@ void RemoteControl::RC_send(void)
 		return;
 	}
 
-	if (keys['W'] || keys[38] ) {
+    if (keys['w'] || keys['W'] || keys[38] ) {
 		yVel = 10 * effort;
 	}
-	if (keys['S'] || keys[40]) {
+    if (keys['s'] || keys['S'] || keys[40]) {
 		yVel = -10 * effort;
 	}
-	if (keys['A'] || keys[37]) {
+    if (keys['a'] || keys['A'] || keys[37]) {
 		xVel = 20 * effort;
 	}
-	if (keys['D'] || keys[39]) {
+    if (keys['d'] || keys['D'] || keys[39]) {
 		xVel = -20 * effort;
 	}
-	if (keys['R']) {
+    if (keys['r'] || keys['R']) {
 		r = 10 * effort;
 	}
-	if (keys['F']) {
+    if (keys['f'] || keys['F']) {
 		r = -10 * effort;
 	}
 

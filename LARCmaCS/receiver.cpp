@@ -25,11 +25,11 @@ Receiver::Receiver(SharedRes * sharedRes)
 	connect(&mThread, SIGNAL(finished()), mWorker, SLOT(deleteLater()));
 
 	connect(mWorker, SIGNAL(updateSSLFPS(const QString &)), this, SIGNAL(updateSSLFPS(const QString &)));
-	connect(this, SIGNAL(updateSimulatorMode(bool)), mWorker, SLOT(changeSimulatorMode(bool)));
+    connect(this, SIGNAL(updateSimulatorMode(bool, const QString &)), mWorker, SLOT(changeSimulatorMode(bool, const QString &)));
 	connect(mWorker, SIGNAL(updateDetection(const QSharedPointer<SSL_WrapperPacket> &, int))
 				, this, SLOT(updateDetection(const QSharedPointer<SSL_WrapperPacket> &, int)));
 	connect(mWorker, SIGNAL(updateGeometry(const QSharedPointer<SSL_WrapperPacket> &))
-				, this, SLOT(updateGeometry(const QSharedPointer<SSL_WrapperPacket> &)));
+                , this, SLOT(updateGeometry(const QSharedPointer<SSL_WrapperPacket> &)));
 
 	mThread.start();
 }
@@ -55,7 +55,7 @@ void Receiver::setDisplayFlag()
 	mDisplayFlag = true;
 }
 
-void Receiver::changeSimulatorMode(bool isSim, const QString &, int)
+void Receiver::changeSimulatorMode(bool isSim, const QString &, int, int, const QString &netInterface)
 {
-	emit updateSimulatorMode(isSim);
+    emit updateSimulatorMode(isSim, netInterface);
 }

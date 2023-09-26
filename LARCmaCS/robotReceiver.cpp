@@ -14,6 +14,8 @@
 
 #include "robotReceiver.h"
 
+#include <QDebug>
+
 RobotReceiver::RobotReceiver(SharedRes * sharedRes)
 	: mSharedRes(sharedRes)
 {
@@ -51,3 +53,4 @@ void RobotReceiver::changeBarrierState(const QVector<bool> &barrierState)
 {
 	mSharedRes->setBarrierState(barrierState);
 }
+

@@ -14,6 +14,9 @@ RefereeClient::RefereeClient(SharedRes * sharedRes)
 	connect(mWorker, SIGNAL(refereeInfoUpdate(const QSharedPointer<RefereeInfo> &)),
 			this, SLOT(updateReferee(const QSharedPointer<RefereeInfo> &)));
 
+    connect(this, SIGNAL(changeNetInterface(const QString &)),
+            mWorker, SLOT(changeNetInterface(const QString &)));
+
 	mThread.start();
 }
 
@@ -26,4 +29,10 @@ RefereeClient::~RefereeClient()
 void RefereeClient::updateReferee(const QSharedPointer<RefereeInfo> &refInfo)
 {
 	mSharedRes->setRefereeData(refInfo->state, refInfo->commandForTeam, refInfo->isPartOfFieldLeft);
+}
+
+
+void RefereeClient::changeSimulatorMode(bool, const QString &, int, const QString & netInterface)
+{
+    emit changeNetInterface(netInterface);
 }

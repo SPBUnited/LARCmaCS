@@ -112,8 +112,14 @@
          </property>
          <item>
           <widget class="QCheckBox" name="checkBox_SimEnable">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="text">
             <string>Enable Simulator</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -134,14 +140,42 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Simulator port</string>
+            <string>Blue port</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="lineEditSimPort">
            <property name="text">
-            <string>20011</string>
+            <string>10301</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Yellow port</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditSimPortYellow">
+           <property name="text">
+            <string>10302</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2_1">
+           <property name="text">
+            <string>Network interface</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditNetInterface">
+           <property name="text">
+            <string>eth0</string>
            </property>
           </widget>
          </item>

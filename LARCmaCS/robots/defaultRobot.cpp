@@ -27,7 +27,7 @@ void DefaultRobot::formControlPacket(QByteArray & command, int numOfRobot, int s
 	msg.setKickerChargeEnable(kickerCharge);
 	msg.setSpeedX(speedX);
 	msg.setSpeedY(speedY);
-	msg.setSpeedR(speedR);
+    msg.setSpeedR(-speedR);
 	msg.setKickForward(kickForward);
 	msg.setKickUp(kickUp);
 	msg.setDribblerEnable(enableSpinner);

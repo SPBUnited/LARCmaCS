@@ -45,10 +45,10 @@ defineTest(copyToDestdir) {
 }
 
 INIT_FILES = \
-	$$PWD/resources/LARCmaCS.exe.embed.manifest \
-	$$PWD/resources/gamepads.txt \
-	$$PWD/resources/help.png \
-	$$PWD/resources/help.html
+    $$PWD/resources/LARCmaCS.exe.embed.manifest \
+    $$PWD/resources/gamepads.txt \
+    $$PWD/resources/help.png \
+    $$PWD/resources/help.html
 
 copyToDestdir($$INIT_FILES)
 

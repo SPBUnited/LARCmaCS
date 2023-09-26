@@ -71,11 +71,11 @@ private slots:
 
 signals:
 	void updateDebugFrequency(int frequency);
-	void ChangeSimulatorMode(bool state);
+    void ChangeSimulatorMode(bool state, const QString &netInterface);
 	void pauseUnpause();
 	void setDirectory(const QString & s);
 	void updateRobots();
-	void connectorChanged(bool isSim, const QString & ip, int port);
+  void connectorChanged(bool isSim, const QString & ip, int port, int portYellow, const QString & netInterface);
 	void run(int N, const QByteArray & command);
-	void runSim(const QByteArray & command);
+    void runSim(const QByteArray & command, bool);
 };

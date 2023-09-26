@@ -16,6 +16,7 @@
 
 #include <QHostAddress>
 #include <QUdpSocket>
+#include <QSharedPointer>
 
 class RobotReceiverWorker : public QObject
 {
@@ -32,7 +33,7 @@ signals:
 	void newBarrierState(const QVector<bool> & barrierState);
 	void newKickerChargeStatus(const QVector<int> & kickerChargeStatus);
 	void newConnectionState(const QVector<int> & connectionState);
-	void newChargeLevel(const QVector<int> & connectionState);
+    void newChargeLevel(const QVector<int> & connectionState);
 
 private slots:
 	void processPendingDatagrams();

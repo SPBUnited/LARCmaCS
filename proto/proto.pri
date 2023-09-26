@@ -29,6 +29,9 @@ msvc {
   PROTOC_DIR = $${PROTO_DIR}/tools/protobuf/
   DLLS += $$PROTO_DIR/$${PREFIX_STR}bin/libprotobuf$${SUFFIX_STR}.dll
 }
+unix {
+  LIBS += -lprotobuf
+}
 
 INCLUDEPATH += $${PROTO_DIR}/include
 PROTO_GENERATED_DIR = $$PWD/generated/

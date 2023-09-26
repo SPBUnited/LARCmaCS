@@ -42,7 +42,7 @@ signals:
 	void engineStatistics(const QString & status);
 	void updatePauseState(const QString & state);
 	void toConsole(const QString & str);
-	void connectorChanged(bool, const QString &, int);
+  void connectorChanged(bool, const QString &, int, int, const QString &);
 	void newData(const QVector<Rule> & data);
 	void pause(bool status);
 	void stopped();

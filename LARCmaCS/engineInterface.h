@@ -10,7 +10,7 @@ typedef struct Rule
 	int mSpeedY = 0;
 	int mSpeedR = 0;
 
-	int mSpeedDribbler = 0;
+    float mSpeedDribbler = 0;
 	int mDribblerEnable = 0;
 
 	int mKickerVoltageLevel = 12;
