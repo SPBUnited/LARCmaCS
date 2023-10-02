@@ -7,7 +7,7 @@
 #include "defaultRobot.h"
 #include <QThread>
 
-const QString Connector::robotBoxIP = QStringLiteral("10.0.120.210");
+const QString Connector::robotBoxIP = QStringLiteral("10.0.120.211");
 
 Connector::Connector(SharedRes * sharedRes)
 	: mSharedRes(sharedRes)

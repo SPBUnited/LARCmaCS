@@ -270,7 +270,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 	QVector<Rule> rule(Constants::ruleAmount);
 
     for (int i = 0; i < Constants::ruleAmount; i++) {
-        if (ruleArray[i * Constants::ruleLength] == 1) {
+        //if (ruleArray[i * Constants::ruleLength] == 1) {
             rule[i].mSpeedX = ruleArray[i * Constants::ruleLength + 1];
             rule[i].mSpeedY = ruleArray[i * Constants::ruleLength + 2];
             rule[i].mSpeedR = ruleArray[i * Constants::ruleLength + 3];
@@ -282,7 +282,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
             rule[i].mSpeedDribbler = ruleArray[i * Constants::ruleLength + 9];
             rule[i].mKickerChargeEnable = ruleArray[i * Constants::ruleLength + 10];
             rule[i].mBeep = ruleArray[i * Constants::ruleLength + 11];
-        }
+        //}
     }
 
 //    for (int i = 0; i < Constants::ruleAmount; i++) {
