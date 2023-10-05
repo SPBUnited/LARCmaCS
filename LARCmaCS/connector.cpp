@@ -7,7 +7,9 @@
 #include "defaultRobot.h"
 #include <QThread>
 
-const QString Connector::robotBoxIP = QStringLiteral("10.0.120.210");
+const QList<QString> Connector::robotBoxIPs = {
+    QStringLiteral("10.0.120.210")
+};
 
 Connector::Connector(SharedRes * sharedRes)
 	: mSharedRes(sharedRes)
@@ -62,7 +64,9 @@ unsigned short Connector::getRobotPort()
 
 void Connector::run(int N, const QByteArray & command)
 {
-	mUdpSocket.writeDatagram(command, QHostAddress(robotBoxIP), DefaultRobot::robotPort);
+    for (int i = 0; i < robotBoxIPs.length(); i++) {
+        mUdpSocket.writeDatagram(command, QHostAddress(robotBoxIPs[i]), DefaultRobot::robotPort);
+    }
 }
 
 void Connector::runSim(const QByteArray & command, bool isYellow)
