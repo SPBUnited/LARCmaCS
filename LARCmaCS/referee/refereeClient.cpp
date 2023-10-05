@@ -32,7 +32,7 @@ void RefereeClient::updateReferee(const QSharedPointer<RefereeInfo> &refInfo)
 }
 
 
-void RefereeClient::changeSimulatorMode(bool, const QString &, int, const QString & netInterface)
+void RefereeClient::changeSimulatorMode(bool, const QString &, int, int, const QString & netInterface)
 {
     emit changeNetInterface(netInterface);
 }

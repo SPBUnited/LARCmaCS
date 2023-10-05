@@ -16,7 +16,7 @@ public:
 public slots:
 	void updateReferee(const QSharedPointer<RefereeInfo> & refInfo);
     // TODO: Configure network update on separate signal
-    void changeSimulatorMode(bool isSim, const QString &, int, const QString &);
+    void changeSimulatorMode(bool isSim, const QString &, int, int, const QString &);
 
 signals:
     void changeNetInterface(const QString &netInterface);
