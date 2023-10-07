@@ -8,7 +8,8 @@
 #include <QThread>
 
 const QList<QString> Connector::robotBoxIPs = {
-    QStringLiteral("10.0.120.210")
+    QStringLiteral("10.0.120.211"),
+    QStringLiteral("10.0.120.213"),
 };
 
 Connector::Connector(SharedRes * sharedRes)
