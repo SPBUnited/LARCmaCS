@@ -6,10 +6,13 @@
 #include "erForceRobot.h"
 #include "defaultRobot.h"
 #include <QThread>
+#include <chrono>
+#include <iostream>
+#include <string>
 
 const QList<QString> Connector::robotBoxIPs = {
     QStringLiteral("10.0.120.211"),
-    QStringLiteral("10.0.120.213"),
+//    QStringLiteral("10.0.120.213"),
 };
 
 Connector::Connector(SharedRes * sharedRes)
@@ -119,13 +122,7 @@ void Connector::sendNewCommand(const QVector<Rule> & rule)
 				}
 			}
 
-            if (rule[k].mSpeedX != 0 ||
-                rule[k].mSpeedY != 0 ||
-                rule[k].mSpeedR != 0 ||
-                rule[k].mKickUp != 0 ||
-                rule[k].mKickForward != 0 ||
-                rule[k].mDribblerEnable != 0 ||
-                rule[k].mAutoKick != 0 ||
+            if (
                 rule[k].mSpeedX != oldRule[k].mSpeedX ||
                 rule[k].mSpeedY != oldRule[k].mSpeedY ||
                 rule[k].mSpeedR != oldRule[k].mSpeedR ||
@@ -139,6 +136,12 @@ void Connector::sendNewCommand(const QVector<Rule> & rule)
                 rule[k].mBeep != oldRule[k].mBeep) {
 
                 if (!simFlag) {
+                    if (k==0) {
+                        std::chrono::milliseconds ms =
+                                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+                        std::to_string(ms.count());
+                        qDebug() << "-------------- Sending " << std::to_string(ms.count()).c_str() << endl;
+                    }
                     emit run(k, command);
                 } else {
                     emit runSim(command, k >= rule.size()/2);
