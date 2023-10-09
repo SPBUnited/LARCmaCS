@@ -11,3 +11,4 @@ personal.pri
 *Debug
 *Release
 LARCmaCS.cmd
+logs/*.log*
