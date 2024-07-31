@@ -133,7 +133,7 @@
          <item>
           <widget class="QLineEdit" name="lineEditSimIP">
            <property name="text">
-            <string>127.0.0.1</string>
+            <string>10.0.120.211</string>
            </property>
           </widget>
          </item>

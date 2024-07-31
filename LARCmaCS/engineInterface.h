@@ -13,8 +13,8 @@ typedef struct Rule
     float mSpeedDribbler = 0;
 	int mDribblerEnable = 0;
 
-	int mKickerVoltageLevel = 12;
-	int mKickerChargeEnable = 1;
+	int mKickerVoltageLevel = 0;
+	int mKickerChargeEnable = 0;
 	int mKickUp = 0;
 	int mKickForward = 0;
 
