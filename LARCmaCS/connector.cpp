@@ -100,7 +100,6 @@ void Connector::sendNewCommand(const QVector<Rule> &rule)
             {
                 if (!mIsPause)
                 {
-                    std::cout << "aaaaaaaaa" << rule[k].mbotID << "\n";
                     DefaultRobot::formControlPacket(command, rule[k].mbotID + 1, rule[k].mSpeedX, rule[k].mSpeedY, rule[k].mSpeedR,
                                                     rule[k].mKickUp, rule[k].mKickForward, rule[k].mKickerVoltageLevel,
                                                     rule[k].mDribblerEnable, rule[k].mSpeedDribbler, rule[k].mAutoKick,

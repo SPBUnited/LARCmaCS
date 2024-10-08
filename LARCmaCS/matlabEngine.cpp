@@ -140,6 +140,7 @@ QSharedPointer<PacketSSL> MatlabEngine::loadVisionData()
 
 void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 {
+	// std::cout << "aaaaaaggg";
 	if (packetssl.isNull()) {
 		return;
 	}
@@ -173,7 +174,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 	if (received) {
 		// Получаем размер сырых данных в байтах
 		size_t data_size = message.size(0);
-		
+
 		// Проверяем, что размер данных кратен размеру double
 		if (data_size % sizeof(double) == 0) {
 			size_t num_doubles = data_size / sizeof(double);
@@ -182,7 +183,14 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 			// Переносим данные из raw_data в вектор
 			ruleArray.assign(data_ptr, data_ptr + num_doubles);
 		}
+	} else {
+		ruleArray.resize(32 * 14);
 	}
+
+
+    // if (received) {
+    //     memcpy(ruleArray, message.raw_data(), 32 * 13 * sizeof(double));
+    // }
 
     // cout << "Received text:" << ruleArray << endl;
 
@@ -203,7 +211,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 
 	QVector<Rule> rule(int(ruleArray.size() / 14));
     if (received) {
-        for (int i = 0; i < int(ruleArray.size() / 14); i++) {
+                for (int i = 0; i < int(ruleArray.size() / 14); i++) {
 			rule[i].mbotID = ruleArray[i * Constants::ruleLength + 1];
             rule[i].mSpeedX = ruleArray[i * Constants::ruleLength + 2];
             rule[i].mSpeedY = ruleArray[i * Constants::ruleLength + 3];
@@ -221,8 +229,7 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 
     emit newData(rule);
 
-    // free(ruleArray);
-	// ruleArray.clear();
+    //free(ruleArray);
 }
 
 void MatlabEngine::updatePauseState()
