@@ -8,7 +8,7 @@
 #include <QThread>
 
 const QList<QString> Connector::robotBoxIPs = {
-    QStringLiteral("10.0.120.211")};
+    QStringLiteral("10.0.120.210")};
 
 Connector::Connector(SharedRes *sharedRes)
     : mSharedRes(sharedRes), mUdpSocket(this), mStatisticsTimer(this)
@@ -100,7 +100,8 @@ void Connector::sendNewCommand(const QVector<Rule> &rule)
             {
                 if (!mIsPause)
                 {
-                    DefaultRobot::formControlPacket(command, k + 1, rule[k].mSpeedX, rule[k].mSpeedY, rule[k].mSpeedR,
+                    std::cout << "aaaaaaaaa" << rule[k].mbotID << "\n";
+                    DefaultRobot::formControlPacket(command, rule[k].mbotID + 1, rule[k].mSpeedX, rule[k].mSpeedY, rule[k].mSpeedR,
                                                     rule[k].mKickUp, rule[k].mKickForward, rule[k].mKickerVoltageLevel,
                                                     rule[k].mDribblerEnable, rule[k].mSpeedDribbler, rule[k].mAutoKick,
                                                     rule[k].mKickerChargeEnable, rule[k].mBeep);

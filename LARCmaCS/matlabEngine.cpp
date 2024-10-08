@@ -18,6 +18,7 @@
 #include <zmqpp/zmqpp.hpp>
 #include <string>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -166,22 +167,33 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
     socket.connect(endpoint);
     zmqpp::message message;
     bool received = socket.receive(message);
-    double * ruleArray = (double *)malloc(32 * 13  * sizeof(double));
+    // double * ruleArray = (double *)malloc(32 * 13  * sizeof(double));
+	std::vector<double> ruleArray;
 
-    if (received) {
-        memcpy(ruleArray, message.raw_data(), 32 * 13 * sizeof(double));
-    }
+	if (received) {
+		// Получаем размер сырых данных в байтах
+		size_t data_size = message.size(0);
+		
+		// Проверяем, что размер данных кратен размеру double
+		if (data_size % sizeof(double) == 0) {
+			size_t num_doubles = data_size / sizeof(double);
+			const double *data_ptr = static_cast<const double *>(message.raw_data(0));
 
-    cout << "Received text:" << ruleArray << endl;
+			// Переносим данные из raw_data в вектор
+			ruleArray.assign(data_ptr, data_ptr + num_doubles);
+		}
+	}
 
-    for (int i = 0; i < 32; ++i) {
-         for (int j = 0; j < 13; ++j) {
-             std::cout << ruleArray[i * 13 + j] << ' ';
+    // cout << "Received text:" << ruleArray << endl;
+
+    for (int i = 0; i < int(ruleArray.size() / 14); ++i) {
+         for (int j = 0; j < 14; ++j) {
+             std::cout << ruleArray[i * 14 + j] << ' ';
          }
          std::cout << std::endl;
      }
 
-    qDebug() << "Rules" << ruleArray << endl;
+    // qDebug() << "Rules" << ruleArray << endl;
 
     char sendString[256];
     sprintf(sendString, "Rules=zeros(%d, %d);", Constants::ruleAmount, Constants::ruleLength);
@@ -189,26 +201,28 @@ void MatlabEngine::processPacket(const QSharedPointer<PacketSSL> & packetssl)
 
 // Разбор пришедшего пакета и переправка его строк на connector
 
-	QVector<Rule> rule(Constants::ruleAmount);
+	QVector<Rule> rule(int(ruleArray.size() / 14));
     if (received) {
-        for (int i = 0; i < Constants::ruleAmount; i++) {
-            rule[i].mSpeedX = ruleArray[i * Constants::ruleLength + 1];
-            rule[i].mSpeedY = ruleArray[i * Constants::ruleLength + 2];
-            rule[i].mSpeedR = ruleArray[i * Constants::ruleLength + 3];
-            rule[i].mKickUp = ruleArray[i * Constants::ruleLength + 4];
-            rule[i].mKickForward = ruleArray[i * Constants::ruleLength + 5];
-            rule[i].mAutoKick = ruleArray[i * Constants::ruleLength + 6];
-            rule[i].mKickerVoltageLevel = ruleArray[i * Constants::ruleLength + 7];
-            rule[i].mDribblerEnable = ruleArray[i * Constants::ruleLength + 8];
-            rule[i].mSpeedDribbler = ruleArray[i * Constants::ruleLength + 9];
-            rule[i].mKickerChargeEnable = ruleArray[i * Constants::ruleLength + 10];
-            rule[i].mBeep = ruleArray[i * Constants::ruleLength + 11];
+        for (int i = 0; i < int(ruleArray.size() / 14); i++) {
+			rule[i].mbotID = ruleArray[i * Constants::ruleLength + 1];
+            rule[i].mSpeedX = ruleArray[i * Constants::ruleLength + 2];
+            rule[i].mSpeedY = ruleArray[i * Constants::ruleLength + 3];
+            rule[i].mSpeedR = ruleArray[i * Constants::ruleLength + 4];
+            rule[i].mKickUp = ruleArray[i * Constants::ruleLength + 5];
+            rule[i].mKickForward = ruleArray[i * Constants::ruleLength + 6];
+            rule[i].mAutoKick = ruleArray[i * Constants::ruleLength + 7];
+            rule[i].mKickerVoltageLevel = ruleArray[i * Constants::ruleLength + 8];
+            rule[i].mDribblerEnable = ruleArray[i * Constants::ruleLength + 9];
+            rule[i].mSpeedDribbler = ruleArray[i * Constants::ruleLength + 10];
+            rule[i].mKickerChargeEnable = ruleArray[i * Constants::ruleLength + 11];
+            rule[i].mBeep = ruleArray[i * Constants::ruleLength + 12];
         }
     }
 
     emit newData(rule);
 
-    free(ruleArray);
+    // free(ruleArray);
+	// ruleArray.clear();
 }
 
 void MatlabEngine::updatePauseState()

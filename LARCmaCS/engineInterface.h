@@ -6,6 +6,8 @@
 
 typedef struct Rule
 {
+	int mbotID = 0;
+
 	int mSpeedX = 0;
 	int mSpeedY = 0;
 	int mSpeedR = 0;
@@ -13,7 +15,7 @@ typedef struct Rule
     float mSpeedDribbler = 0;
 	int mDribblerEnable = 0;
 
-	int mKickerVoltageLevel = 12;
+	int mKickerVoltageLevel = 0;
 	int mKickerChargeEnable = 1;
 	int mKickUp = 0;
 	int mKickForward = 0;
