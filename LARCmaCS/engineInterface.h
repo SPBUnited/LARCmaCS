@@ -11,10 +11,10 @@ typedef struct Rule
 	int mSpeedR = 0;
 
     float mSpeedDribbler = 0;
-	int mDribblerEnable = 1;
+	int mDribblerEnable = 0;
 
 	int mKickerVoltageLevel = 0;
-	int mKickerChargeEnable = 0;
+	int mKickerChargeEnable = 1;
 	int mKickUp = 0;
 	int mKickForward = 0;
 
