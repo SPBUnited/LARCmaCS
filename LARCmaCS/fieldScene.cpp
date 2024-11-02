@@ -122,7 +122,7 @@ void FieldScene::updateRobot(const SSL_DetectionRobot & robot, int team, unsigne
 	id = Robot::NA;
 	if (robot.has_robot_id()) {
 		id = robot.robot_id();
-		label.setNum(id + 1, 10); //TODO change ipTable so it starts from 0 and add labels without +1
+		label.setNum(id, 10); //TODO change ipTable so it starts from 0 and add labels without +1
 		for (int j = 0; j < robots.size(); j++) {
 			if (robots[j]->getTeamID() == team && robots[j]->getRobotID() == id) {
 				robotNum = j;
